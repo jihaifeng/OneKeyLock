@@ -29,7 +29,7 @@ public class LockActivity extends Activity {
         if (devicePolicyManager.isAdminActive(componentName)) {
             //已经有权限，直接锁屏
             devicePolicyManager.lockNow();
-            LockActivity.this.finish();
+            finish();
         } else {
             //没有权限，去设备管理器设置权限
             setManager();
@@ -52,7 +52,7 @@ public class LockActivity extends Activity {
         if (null != devicePolicyManager && null != componentName) {
             if (devicePolicyManager.isAdminActive(componentName)) {
                 devicePolicyManager.lockNow();
-                LockActivity.this.finish();
+                finish();
             }
         }
         super.onResume();
