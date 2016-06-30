@@ -13,19 +13,21 @@ import android.os.Bundle;
 public class LockActivity extends Activity {
     private DevicePolicyManager devicePolicyManager;
     private ComponentName componentName;
+    private static final int resultCode = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         lockScreen();
 
 
     }
 
     private void lockScreen() {
-        // 创建一个Intent
         devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         componentName = new ComponentName(this, LockReceiver.class);
+        // 创建一个Intent
         if (devicePolicyManager.isAdminActive(componentName)) {
             //已经有权限，直接锁屏
             devicePolicyManager.lockNow();
@@ -43,18 +45,20 @@ public class LockActivity extends Activity {
         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "oneKeyLock");
-        startActivity(intent);
+        startActivityForResult(intent,resultCode);
     }
 
     @Override
-    protected void onResume() {
-        //onResume中设置首次激活设备管理器后，锁屏
-        if (null != devicePolicyManager && null != componentName) {
-            if (devicePolicyManager.isAdminActive(componentName)) {
-                devicePolicyManager.lockNow();
-                finish();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Activity.RESULT_OK){
+            //设置首次激活设备管理器后，锁屏
+            if (null != devicePolicyManager && null != componentName) {
+                if (devicePolicyManager.isAdminActive(componentName)) {
+                    devicePolicyManager.lockNow();
+                    finish();
+                }
             }
         }
-        super.onResume();
     }
 }
