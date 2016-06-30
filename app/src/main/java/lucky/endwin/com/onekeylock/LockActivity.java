@@ -20,8 +20,6 @@ public class LockActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         lockScreen();
-
-
     }
 
     private void lockScreen() {
@@ -45,20 +43,18 @@ public class LockActivity extends Activity {
         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "oneKeyLock");
-        startActivityForResult(intent,resultCode);
+        startActivity(intent);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Activity.RESULT_OK){
-            //设置首次激活设备管理器后，锁屏
-            if (null != devicePolicyManager && null != componentName) {
-                if (devicePolicyManager.isAdminActive(componentName)) {
-                    devicePolicyManager.lockNow();
-                    finish();
-                }
+    protected void onResume() {
+        //设置首次激活设备管理器后，锁屏
+        if (null != devicePolicyManager && null != componentName) {
+            if (devicePolicyManager.isAdminActive(componentName)) {
+                devicePolicyManager.lockNow();
+                finish();
             }
+            super.onResume();
         }
     }
 }
